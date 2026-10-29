@@ -5,14 +5,14 @@ import android.speech.tts.TextToSpeech
 import java.util.Locale
 
 /** Lit les consignes à voix haute avec la synthèse vocale du téléphone (pas de fichiers audio). */
-class Speech(context: Context) {
+class Speech(context: Context) : TextToSpeech.OnInitListener {
     private var ready = false
-    private val tts = TextToSpeech(context.applicationContext) { status ->
-        ready = status == TextToSpeech.SUCCESS
-        if (ready) engine().language = Locale.FRENCH
-    }
+    private val tts: TextToSpeech = TextToSpeech(context.applicationContext, this)
 
-    private fun engine() = tts
+    override fun onInit(status: Int) {
+        ready = status == TextToSpeech.SUCCESS
+        if (ready) tts.language = Locale.FRENCH
+    }
 
     fun say(text: String) {
         if (ready) tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, "consigne")
